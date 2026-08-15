@@ -1,0 +1,39 @@
+name: Databricks CD
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy-and-run:
+    runs-on: ubuntu-latest
+
+    env:
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+      DATABRICKS_JOB_ID: ${{ secrets.DATABRICKS_JOB_ID }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Databricks CLI
+        uses: databricks/setup-cli@main
+
+      - name: Validate Databricks authentication
+        run: |
+          databricks current-user me
+
+      - name: Deploy production notebooks to Databricks
+        run: |
+          databricks workspace import-dir \
+            proceso \
+            "/Users/mapc2001@hotmail.com" \
+            --overwrite
+
+      - name: Verify deployed notebooks
+        run: |
+          databricks workspace list "/Users/mapc2001@hotmail.com"
+
+      - name: Run production Databricks workflow
+        run: |
+          databricks jobs run-now "$DATABRICKS_JOB_ID" --timeout 30m
