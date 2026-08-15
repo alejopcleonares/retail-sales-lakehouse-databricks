@@ -31,13 +31,17 @@ jobs:
           test -f proceso/02_transformacion_silver.py
           test -f proceso/03_carga_gold.py
           test -f proceso/04_auditoria_calidad.py
-
+          test -f proceso/00_preparacion_ambiente.py
+          test -f proceso/05_aplicar_grants.py
+          
       - name: Check Python syntax
         run: |
           python -m py_compile proceso/01_ingesta_bronze.py
           python -m py_compile proceso/02_transformacion_silver.py
           python -m py_compile proceso/03_carga_gold.py
           python -m py_compile proceso/04_auditoria_calidad.py
+          python -m py_compile proceso/00_preparacion_ambiente.py
+          python -m py_compile proceso/05_aplicar_grants.py
 
       - name: Check for obvious secrets
         run: |
