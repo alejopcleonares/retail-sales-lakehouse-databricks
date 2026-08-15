@@ -1,0 +1,54 @@
+name: Databricks CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  validate-project:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Validate required project files
+        run: |
+          test -f README.md
+          test -f docs/architecture.md
+          test -f docs/data_dictionary.md
+          test -f notebooks/01_ingesta_bronze.py
+          test -f notebooks/02_transformacion_silver.py
+          test -f notebooks/03_carga_gold.py
+          test -f notebooks/04_auditoria_calidad.py
+
+      - name: Check Python syntax
+        run: |
+          python -m py_compile notebooks/01_ingesta_bronze.py
+          python -m py_compile notebooks/02_transformacion_silver.py
+          python -m py_compile notebooks/03_carga_gold.py
+          python -m py_compile notebooks/04_auditoria_calidad.py
+
+      - name: Check for obvious secrets
+        run: |
+          if grep -RniE \
+          "(password|client_secret|access_token|sas_token|account_key)[[:space:]]*=" \
+          notebooks docs README.md; then
+            echo "Potential hard-coded secret detected."
+            exit 1
+          else
+            echo "No obvious hard-coded secrets detected."
+          fi
+
+      - name: Validation completed
+        run: |
+          echo "Retail Sales Lakehouse repository validation completed successfully."
