@@ -95,6 +95,8 @@ Esta tabla registra:
 El Workflow `wf_retail_lakehouse` ejecuta secuencialmente:
 
 ```text
+prepare_environment
+        ↓
 bronze_ingestion
         ↓
 silver_transformation
@@ -102,9 +104,8 @@ silver_transformation
 gold_load
         ↓
 quality_audit
-```
-
-Las cuatro tareas utilizan el Job Compute `compute-retail-prod`.
+        ↓
+apply_grants
 
 ## Seguridad
 
